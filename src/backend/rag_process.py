@@ -22,19 +22,25 @@ class rag_process:
         else:
             return "Error in embedding generation"
 
-    def query_documents(self, question, n_results=2):
+    # src/backend/rag_process.py
+    def query_documents(self, question, n_results=2, metadata_filter=None):
         query_embedding = self.embedding_class.custom_embeddings([question])
-
-        results = self.embedding_class.collection.query(
-            query_embeddings=query_embedding,
-            n_results=n_results,
-            include=["documents", "metadatas"]
-        )
-
+    
+        kwargs = {
+            "query_embeddings": query_embedding,
+            "n_results": n_results,
+            "include": ["documents", "metadatas"]
+        }
+        if metadata_filter:
+            # Chroma uses "where" for metadata filters
+            kwargs["where"] = metadata_filter
+    
+        results = self.embedding_class.collection.query(**kwargs)
+    
         relevant_chunks = results["documents"][0]
         metadatas = results["metadatas"][0]
-
         return relevant_chunks, metadatas
+
 
     def generate_response(self, question, relevant_chunks, results_metadata):
         # Format context with source information
