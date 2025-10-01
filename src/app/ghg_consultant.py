@@ -1,47 +1,36 @@
-import streamlit as st
-import asyncio
+# inside display_ghg_consultant() after you read `prompt`
+from backend.state import encode_state
+from backend.rl_agent import RlAgent
+from backend.retrieval_policies import action_to_filter
+from backend.reward import feedback_reward
 
-def display_ghg_consultant():
+if "rl_agent" not in st.session_state:
+    st.session_state.rl_agent = RlAgent()  # persists Q in data/q_table.json
 
-    rag_class = st.session_state.rag_class
+state = encode_state(prompt, st.session_state.get("company_info"))
+action = st.session_state.rl_agent.select(state)
+meta_filter = action_to_filter(action)
 
-    st.header("GHG Consultant")
+# 1) use your existing RAG, but pass `meta_filter` to constrain retrieval
+relevant_chunks, metadatas = st.session_state.rag_class.query_documents(
+    question=prompt, n_results=4, metadata_filter=meta_filter  # add this arg in rag_process
+)
 
-    # Display chat messages from history on app rerun
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):  
-            st.markdown(message["content"])
+# 2) generate the answer as before
+response = st.session_state.ghg_assistant.generate_response(
+    user_prompt=prompt,
+    relevant_chunks=relevant_chunks,
+    results_metadata=metadatas
+)
 
-    # React to user input
-    if prompt:= st.chat_input("Say Something"):
-        # Display user message in chat message container
-        with st.chat_message("user"):
-            st.markdown(prompt)
-        # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
-
-        # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            placeholder = st.empty()
-
-            # Get both chunks and metadata
-            relevant_chunks, results_metadata = rag_class.query_documents(question=prompt)
-
-            with st.spinner("🍃 Generating Response..."):
-                # try:
-                #     response = asyncio.run(rag_class.generate_response(
-                #         question=prompt, 
-                #         relevant_chunks=relevant_chunks, 
-                #         results_metadata=results_metadata
-                #     ))
-                # except Exception as e:
-                #     response = f"Error generating response: {str(e)}"
-                response = rag_class.generate_response(
-                        question=prompt, 
-                        relevant_chunks=relevant_chunks, 
-                        results_metadata=results_metadata
-                    )
-                
-            placeholder.markdown(response)
-        # Add assistant response to chat history
-        st.session_state.messages.append({"role": "assistant", "content": response})
+# 3) show answer + feedback buttons
+st.markdown(response)
+col1, col2 = st.columns(2)
+if col1.button("👍 Helpful"):
+    r = feedback_reward("up")
+    st.session_state.rl_agent.update(state, action, r)
+    st.success("Thanks! Learning updated.")
+if col2.button("👎 Not helpful"):
+    r = feedback_reward("down")
+    st.session_state.rl_agent.update(state, action, r)
+    st.info("Got it. Learning updated.")
