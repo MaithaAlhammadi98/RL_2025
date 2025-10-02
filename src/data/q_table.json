@@ -1,0 +1,38 @@
+{
+  "{\"len\": \"short\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"ghg\"}": {
+    "broad": 0.237,
+    "legal_only": 0.7237821,
+    "financial_only": 0.0,
+    "company_only": -0.22041
+  },
+  "{\"len\": \"short\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"fin\"}": {
+    "broad": 0.0,
+    "legal_only": 0.0,
+    "financial_only": 0.0,
+    "company_only": 0.51
+  },
+  "{\"len\": \"short\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"legal\"}": {
+    "broad": -0.3,
+    "legal_only": 0.6888618201000002,
+    "financial_only": -0.3,
+    "company_only": 0.0
+  },
+  "{\"len\": \"short\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"other\"}": {
+    "broad": -0.3,
+    "legal_only": -0.3,
+    "financial_only": 0.0,
+    "company_only": 0.0
+  },
+  "{\"len\": \"medium\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"ghg\"}": {
+    "broad": 0.3,
+    "legal_only": 0.0,
+    "financial_only": 0.0,
+    "company_only": 0.0
+  },
+  "{\"len\": \"medium\", \"month\": \"2025-10\", \"sector\": \"energy\", \"size\": \"large\", \"topic\": \"other\"}": {
+    "broad": 0.0,
+    "legal_only": -0.3,
+    "financial_only": 0.0,
+    "company_only": 0.0
+  }
+}
