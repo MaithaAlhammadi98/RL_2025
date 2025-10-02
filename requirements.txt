@@ -16,3 +16,6 @@ pytest==8.0.2
 spacy==3.8.5
 python-docx>=1.1.2
 openpyxl>=3.1.5
+spacy==3.7.6
+en-core-web-md==3.7.1 ; sys_platform != "linux" or platform_system != "Linux"
+
